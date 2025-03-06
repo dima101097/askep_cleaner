@@ -10,11 +10,11 @@ document.getElementById("clearCache").addEventListener("click", () => {
           cache: true, 
           cookies: true 
         }, () => {
-          console.log(`Cache and cookies for ${url.origin} cleared.`);
+          //console.log(`Cache and cookies for ${url.origin} cleared.`);
           chrome.tabs.reload(activeTab.id); 
         });
       } else {
-        alert("Ця сторінка не є askep.net.");
+        alert("Ця сторінка не є сайтом askep.net.");
       }
     });
   });

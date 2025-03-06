@@ -5,8 +5,7 @@
   "description": "Cleans cache and cookies for askep.net",
   "permissions": [
     "browsingData",
-    "activeTab",
-    "scripting"
+    "activeTab"
   ],
   "action": {
     "default_popup": "popup.html",
