@@ -8,7 +8,9 @@ document.getElementById("clearCache").addEventListener("click", () => {
           origins: [url.origin] 
         }, {
           cache: true, 
-          cookies: true 
+          cookies: true,
+          localStorage: true, 
+          sessionStorage: true
         }, () => {
           //console.log(`Cache and cookies for ${url.origin} cleared.`);
           chrome.tabs.reload(activeTab.id); 
