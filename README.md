@@ -4,6 +4,8 @@
 
 Розширення для Google Chrome, яке автоматично сканує та очищає браузерні дані для сайту [askep.net](https://askep.net) (МІС Аскеп).
 
+[![Chrome Web Store](https://img.shields.io/chrome-web-store/v/ndjbgeinngmkgfcbcohaagjblacgpoek?label=Chrome%20Web%20Store&logo=google-chrome&logoColor=white&color=4285F4)](https://chromewebstore.google.com/detail/askep-cleaner/ndjbgeinngmkgfcbcohaagjblacgpoek)
+
 ---
 
 ## Можливості
@@ -22,6 +24,10 @@
 
 ## Встановлення
 
+### Через Chrome Web Store *(рекомендовано)*
+[![Chrome Web Store](https://img.shields.io/badge/Встановити-Chrome%20Web%20Store-4285F4?logo=google-chrome&logoColor=white)](https://chromewebstore.google.com/detail/askep-cleaner/ndjbgeinngmkgfcbcohaagjblacgpoek)
+
+### Вручну (для розробників)
 1. Завантажте або склонуйте репозиторій
 2. Відкрийте Chrome і перейдіть на `chrome://extensions/`
 3. Увімкніть **Режим розробника** (Developer mode) у правому верхньому куті
