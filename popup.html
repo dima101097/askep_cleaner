@@ -3,49 +3,184 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Очищувач кешу Askep</title>
+  <title>Askep Cleaner</title>
   <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Arial', sans-serif;
-      background-color: #f4f4f9;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f0f4f8;
+      width: 320px;
+      padding: 16px;
+    }
+    .header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .header img { width: 32px; height: 32px; border-radius: 6px; }
+    .header h1 { font-size: 16px; color: #1a1a2e; font-weight: 700; }
+
+    #not-askep {
+      display: none;
+      background: #fff3cd; border: 1px solid #ffc107; border-radius: 10px;
+      padding: 16px; text-align: center;
+    }
+    #not-askep p { font-size: 13px; color: #856404; margin-bottom: 14px; }
+    .open-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #2563eb; color: white; border: none;
+      padding: 10px 20px; font-size: 13px; font-weight: 600;
+      border-radius: 8px; cursor: pointer; transition: background 0.2s;
+    }
+    .open-btn:hover { background: #1d4ed8; }
+
+    #main { display: none; }
+
+    #scanningMsg { text-align: center; font-size: 13px; color: #6b7280; margin-bottom: 12px; }
+
+    #results { display: none; margin-bottom: 12px; }
+    .result-title {
+      font-size: 11px; font-weight: 700; color: #6b7280;
+      text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;
+    }
+    .item {
+      display: flex; align-items: center; justify-content: space-between;
+      background: white; border-radius: 7px; padding: 8px 12px;
+      margin-bottom: 6px; border: 1px solid #e5e7eb;
+    }
+    .item-left { display: flex; align-items: center; gap: 8px; }
+    .item-icon { font-size: 16px; }
+    .item-name { font-size: 13px; color: #374151; font-weight: 500; }
+    .item-desc { font-size: 10px; color: #9ca3af; }
+    .badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+    .badge-found    { background: #fef3c7; color: #d97706; }
+    .badge-empty    { background: #d1fae5; color: #059669; }
+    .badge-checking { background: #e5e7eb; color: #6b7280; }
+
+    .actions { display: flex; gap: 8px; margin-top: 4px; }
+    .clear-btn {
+      flex: 1; background: #dc2626; color: white; border: none;
+      padding: 10px; font-size: 13px; font-weight: 600; border-radius: 8px;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .clear-btn:hover { background: #b91c1c; }
+    .clear-btn:disabled { background: #fca5a5; cursor: default; }
+    .rescan-btn {
+      background: white; color: #374151; border: 1px solid #d1d5db;
+      padding: 10px 14px; font-size: 13px; font-weight: 600; border-radius: 8px;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .rescan-btn:hover { background: #f9fafb; }
+
+    /* ── confirm overlay ── */
+    #confirmOverlay {
+      display: none;
+      position: absolute; inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      border-radius: 0;
+      align-items: center; justify-content: center;
+      z-index: 10;
+    }
+    #confirmOverlay.show { display: flex; }
+    .confirm-box {
+      background: white; border-radius: 12px;
+      padding: 20px; margin: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
       text-align: center;
-      padding: 20px;
-      margin: 0;
-      border-radius: 10px;
-      max-width: 300px;
     }
-    h1 {
-      color: #4CAF50;
-      font-size: 24px;
-      margin-bottom: 20px;
+    .confirm-box .icon { font-size: 32px; margin-bottom: 10px; }
+    .confirm-box h2 { font-size: 15px; color: #111827; margin-bottom: 6px; }
+    .confirm-box p { font-size: 12px; color: #6b7280; margin-bottom: 16px; line-height: 1.5; }
+    .confirm-actions { display: flex; gap: 8px; }
+    .confirm-yes {
+      flex: 1; background: #dc2626; color: white; border: none;
+      padding: 9px; font-size: 13px; font-weight: 600;
+      border-radius: 8px; cursor: pointer; transition: background 0.2s;
     }
-    p {
-      color: #555;
-      font-size: 14px;
-      margin-bottom: 30px;
+    .confirm-yes:hover { background: #b91c1c; }
+    .confirm-no {
+      flex: 1; background: white; color: #374151;
+      border: 1px solid #d1d5db; padding: 9px;
+      font-size: 13px; font-weight: 600; border-radius: 8px;
+      cursor: pointer; transition: background 0.2s;
     }
-    button {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      padding: 15px 30px;
-      font-size: 16px;
-      cursor: pointer;
-      border-radius: 5px;
-      transition: background-color 0.3s;
+    .confirm-no:hover { background: #f9fafb; }
+
+    #status {
+      margin-top: 10px; font-size: 12px; text-align: center;
+      color: #6b7280; min-height: 18px;
     }
-    button:hover {
-      background-color: #45a049;
-    }
-    button:active {
-      background-color: #388e3c;
-    }
+    #status.success { color: #059669; font-weight: 600; }
+    #status.error   { color: #dc2626; }
   </style>
 </head>
-<body>
-  <h1>Очищувач кешу Askep</h1>
-  <p>Натисніть кнопку, щоб очистити кеш і перезавантажити сторінку.</p>
-  <button id="clearCache">Очистити кеш та перезавантажити</button>
+<body style="position:relative;">
+
+  <div class="header">
+    <img src="icon.png" alt="logo">
+    <div>
+      <h1>Askep Cleaner <span style="font-size:11px;color:#888;font-weight:400;">v2.0</span></h1>
+    </div>
+  </div>
+
+  <!-- не на askep.net -->
+  <div id="not-askep">
+    <p>Ви не на сайті <strong>askep.net</strong>.<br>Відкрийте сайт, щоб почати сканування.</p>
+    <button class="open-btn" id="openBtn">🌐 Відкрити askep.net</button>
+  </div>
+
+  <!-- на askep.net -->
+  <div id="main">
+    <div id="scanningMsg">⏳ Сканування...</div>
+    <div id="results">
+      <div class="result-title">Знайдені дані</div>
+      <div class="item">
+        <div class="item-left"><span class="item-icon">🗂️</span>
+          <div><div class="item-name">Cache</div><div class="item-desc">Кешовані ресурси сайту</div></div>
+        </div><span class="badge badge-checking" id="badge-cache">...</span>
+      </div>
+      <div class="item">
+        <div class="item-left"><span class="item-icon">🍪</span>
+          <div><div class="item-name">Cookies</div><div class="item-desc">Сесійні та постійні</div></div>
+        </div><span class="badge badge-checking" id="badge-cookies">...</span>
+      </div>
+      <div class="item">
+        <div class="item-left"><span class="item-icon">💾</span>
+          <div><div class="item-name">localStorage</div><div class="esti-desc">Постійне сховище</div></div>
+        </div><span class="badge badge-checking" id="badge-localStorage">...</span>
+      </div>
+      <div class="item">
+        <div class="item-left"><span class="item-icon">⏱️</span>
+          <div><div class="item-name">sessionStorage</div><div class="item-desc">Токени сесії</div></div>
+        </div><span class="badge badge-checking" id="badge-sessionStorage">...</span>
+      </div>
+      <div class="item">
+        <div class="item-left"><span class="item-icon">🗃️</span>
+          <div><div class="item-name">IndexedDB</div><div class="item-desc">Офлайн-дані та форми</div></div>
+        </div><span class="badge badge-checking" id="badge-indexedDB">...</span>
+      </div>
+      <div class="item">
+        <div class="item-left"><span class="item-icon">⚙️</span>
+          <div><div class="item-name">Service Workers</div><div class="item-desc">Фонові скрипти</div></div>
+        </div><span class="badge badge-checking" id="badge-serviceWorker">...</span>
+      </div>
+      <div class="actions" id="actions" style="display:none;">
+        <button class="clear-btn" id="clearBtn">🧹 Очистити знайдене</button>
+        <button class="rescan-btn" id="rescanBtn">↺</button>
+      </div>
+    </div>
+    <div id="status"></div>
+  </div>
+
+  <!-- підтвердження очищення -->
+  <div id="confirmOverlay">
+    <div class="confirm-box">
+      <div class="icon">⚠️</div>
+      <h2>Підтвердіть очищення</h2>
+      <p>Буде очищено всі знайдені дані.<br>Сторінка перезавантажиться автоматично.</p>
+      <div class="confirm-actions">
+        <button class="confirm-yes" id="confirmYes">Очистити</button>
+        <button class="confirm-no"  id="confirmNo">Скасувати</button>
+      </div>
+    </div>
+  </div>
+
   <script src="popup.js"></script>
 </body>
 </html>
