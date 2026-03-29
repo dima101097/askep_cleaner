@@ -6,108 +6,291 @@
   <title>Askep Cleaner</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:             #f0f4f8;
+      --item-bg:        #ffffff;
+      --item-border:    #e5e7eb;
+      --item-hover-bg:  #fef2f2;
+      --item-hover-border: #fca5a5;
+      --title-color:    #1a1a2e;
+      --text-color:     #374151;
+      --desc-color:     #9ca3af;
+      --scan-color:     #6b7280;
+      --section-color:  #6b7280;
+      --status-color:   #6b7280;
+      --rescan-bg:      #ffffff;
+      --rescan-color:   #374151;
+      --rescan-border:  #d1d5db;
+      --rescan-hover:   #f9fafb;
+      --overlay-bg:     rgba(15,23,42,0.45);
+      --confirm-bg:     #ffffff;
+      --confirm-h2:     #111827;
+      --confirm-p:      #6b7280;
+      --confirm-no-bg:  #ffffff;
+      --confirm-no-color:#374151;
+      --confirm-no-border:#d1d5db;
+      --confirm-no-hover:#f9fafb;
+      --warn-bg:        #fff3cd;
+      --warn-border:    #ffc107;
+      --warn-text:      #856404;
+      --sep:            #f3f4f6;
+      --stepper-bg:     #f3f4f6;
+      --stepper-color:  #374151;
+      --stepper-border: #e5e7eb;
+    }
+    body.dark {
+      --bg:             #0f172a;
+      --item-bg:        #1e293b;
+      --item-border:    #334155;
+      --item-hover-bg:  #2d1515;
+      --item-hover-border: #7f1d1d;
+      --title-color:    #f1f5f9;
+      --text-color:     #e2e8f0;
+      --desc-color:     #64748b;
+      --scan-color:     #94a3b8;
+      --section-color:  #94a3b8;
+      --status-color:   #94a3b8;
+      --rescan-bg:      #1e293b;
+      --rescan-color:   #e2e8f0;
+      --rescan-border:  #475569;
+      --rescan-hover:   #273448;
+      --overlay-bg:     rgba(0,0,0,0.65);
+      --confirm-bg:     #1e293b;
+      --confirm-h2:     #f1f5f9;
+      --confirm-p:      #94a3b8;
+      --confirm-no-bg:  #1e293b;
+      --confirm-no-color:#e2e8f0;
+      --confirm-no-border:#475569;
+      --confirm-no-hover:#273448;
+      --warn-bg:        #1c1a0a;
+      --warn-border:    #ca8a04;
+      --warn-text:      #fbbf24;
+      --sep:            #273448;
+      --stepper-bg:     #273448;
+      --stepper-color:  #e2e8f0;
+      --stepper-border: #334155;
+    }
+
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
-      background: #f0f4f8;
+      font-size: 14px;
+      background: var(--bg);
       width: 320px;
       padding: 16px;
+      transition: background 0.25s;
+      height: fit-content;
     }
-    .header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-    .header img { width: 32px; height: 32px; border-radius: 6px; }
-    .header h1 { font-size: 16px; color: #1a1a2e; font-weight: 700; }
 
+    /* ── header ── */
+    .header {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+    }
+    .header img { width: 32px; height: 32px; border-radius: 6px; }
+    .header h1 { font-size: 1.14em; color: var(--title-color); font-weight: 700; }
+    .header-right { margin-left: auto; flex-shrink: 0; }
+    .settings-btn {
+      background: #475569; border: none; cursor: pointer;
+      font-size: 1em; padding: 5px 8px; border-radius: 7px; line-height: 1;
+      transition: background 0.2s; color: #fff;
+    }
+    .settings-btn:hover { background: #334155; }
+    body.dark .settings-btn { background: #334155; }
+    body.dark .settings-btn:hover { background: #475569; }
+    .back-btn {
+      display: none;
+      align-items: center; gap: 5px;
+      background: var(--stepper-bg); border: 1.5px solid var(--stepper-border);
+      cursor: pointer; color: var(--text-color); font-weight: 600;
+      font-size: 0.86em; padding: 4px 10px; border-radius: 7px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .back-btn:hover { background: #2563eb; color: #fff; border-color: #2563eb; }
+    .back-btn .arrow { font-style: normal; }
+
+    /* ── not-askep ── */
     #not-askep {
       display: none;
-      background: #fff3cd; border: 1px solid #ffc107; border-radius: 10px;
+      background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: 10px;
       padding: 16px; text-align: center;
     }
-    #not-askep p { font-size: 13px; color: #856404; margin-bottom: 14px; }
+    #not-askep p { font-size: 0.93em; color: var(--warn-text); margin-bottom: 14px; }
     .open-btn {
       display: inline-flex; align-items: center; gap: 6px;
       background: #2563eb; color: white; border: none;
-      padding: 10px 20px; font-size: 13px; font-weight: 600;
+      padding: 10px 20px; font-size: 0.93em; font-weight: 600;
       border-radius: 8px; cursor: pointer; transition: background 0.2s;
     }
     .open-btn:hover { background: #1d4ed8; }
 
+    /* ── main ── */
     #main { display: none; }
-
-    #scanningMsg { text-align: center; font-size: 13px; color: #6b7280; margin-bottom: 12px; }
+    #scanningMsg { text-align: center; font-size: 0.93em; color: var(--scan-color); margin-bottom: 12px; }
 
     #results { display: none; margin-bottom: 12px; }
     .result-title {
-      font-size: 11px; font-weight: 700; color: #6b7280;
+      font-size: 0.79em; font-weight: 700; color: var(--section-color);
       text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;
     }
     .item {
       display: flex; align-items: center; justify-content: space-between;
-      background: white; border-radius: 7px; padding: 8px 12px;
-      margin-bottom: 6px; border: 1px solid #e5e7eb;
+      background: var(--item-bg); border-radius: 7px; padding: 8px 12px;
+      margin-bottom: 6px; border: 1px solid var(--item-border);
+      transition: background 0.15s, border-color 0.15s;
     }
+    .item.clearable { cursor: pointer; }
+    .item.clearable:hover {
+      background: var(--item-hover-bg);
+      border-color: var(--item-hover-border);
+    }
+    .item.clearing { opacity: 0.55; pointer-events: none; }
     .item-left { display: flex; align-items: center; gap: 8px; }
-    .item-icon { font-size: 16px; }
-    .item-name { font-size: 13px; color: #374151; font-weight: 500; }
-    .item-desc { font-size: 10px; color: #9ca3af; }
-    .badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+    .item-icon { font-size: 1.14em; }
+    .item-name { font-size: 0.93em; color: var(--text-color); font-weight: 500; }
+    .item-desc { font-size: 0.71em; color: var(--desc-color); }
+    .badge { font-size: 0.79em; font-weight: 700; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
     .badge-found    { background: #fef3c7; color: #d97706; }
     .badge-empty    { background: #d1fae5; color: #059669; }
     .badge-checking { background: #e5e7eb; color: #6b7280; }
+    .badge-clearing { background: #fee2e2; color: #dc2626; }
+    body.dark .badge-checking { background: #334155; color: #94a3b8; }
 
     .actions { display: flex; gap: 8px; margin-top: 4px; }
     .clear-btn {
       flex: 1; background: #dc2626; color: white; border: none;
-      padding: 10px; font-size: 13px; font-weight: 600; border-radius: 8px;
+      padding: 10px; font-size: 0.93em; font-weight: 600; border-radius: 8px;
       cursor: pointer; transition: background 0.2s;
     }
     .clear-btn:hover { background: #b91c1c; }
     .clear-btn:disabled { background: #fca5a5; cursor: default; }
     .rescan-btn {
-      background: white; color: #374151; border: 1px solid #d1d5db;
-      padding: 10px 14px; font-size: 13px; font-weight: 600; border-radius: 8px;
+      background: var(--rescan-bg); color: var(--rescan-color);
+      border: 1px solid var(--rescan-border);
+      padding: 10px 14px; font-size: 0.93em; font-weight: 600; border-radius: 8px;
       cursor: pointer; transition: background 0.2s;
     }
-    .rescan-btn:hover { background: #f9fafb; }
+    .rescan-btn:hover { background: var(--rescan-hover); }
+
+    #status {
+      margin-top: 10px; font-size: 0.86em; text-align: center;
+      color: var(--status-color); min-height: 18px;
+    }
+    #status.success { color: #059669; font-weight: 600; }
+    #status.error   { color: #dc2626; }
 
     /* ── confirm overlay ── */
     #confirmOverlay {
-      display: none;
-      position: absolute; inset: 0;
-      background: rgba(15, 23, 42, 0.45);
-      border-radius: 0;
-      align-items: center; justify-content: center;
-      z-index: 10;
+      display: none; position: absolute; inset: 0;
+      background: var(--overlay-bg);
+      align-items: center; justify-content: center; z-index: 10;
     }
     #confirmOverlay.show { display: flex; }
     .confirm-box {
-      background: white; border-radius: 12px;
+      background: var(--confirm-bg); border-radius: 12px;
       padding: 20px; margin: 16px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
       text-align: center;
     }
-    .confirm-box .icon { font-size: 32px; margin-bottom: 10px; }
-    .confirm-box h2 { font-size: 15px; color: #111827; margin-bottom: 6px; }
-    .confirm-box p { font-size: 12px; color: #6b7280; margin-bottom: 16px; line-height: 1.5; }
+    .confirm-box .icon { font-size: 2em; margin-bottom: 10px; }
+    .confirm-box h2 { font-size: 1.07em; color: var(--confirm-h2); margin-bottom: 6px; }
+    .confirm-box p  { font-size: 0.86em; color: var(--confirm-p); margin-bottom: 16px; line-height: 1.5; }
     .confirm-actions { display: flex; gap: 8px; }
     .confirm-yes {
       flex: 1; background: #dc2626; color: white; border: none;
-      padding: 9px; font-size: 13px; font-weight: 600;
+      padding: 9px; font-size: 0.93em; font-weight: 600;
       border-radius: 8px; cursor: pointer; transition: background 0.2s;
     }
     .confirm-yes:hover { background: #b91c1c; }
     .confirm-no {
-      flex: 1; background: white; color: #374151;
-      border: 1px solid #d1d5db; padding: 9px;
-      font-size: 13px; font-weight: 600; border-radius: 8px;
+      flex: 1; background: var(--confirm-no-bg); color: var(--confirm-no-color);
+      border: 1px solid var(--confirm-no-border); padding: 9px;
+      font-size: 0.93em; font-weight: 600; border-radius: 8px;
       cursor: pointer; transition: background 0.2s;
     }
-    .confirm-no:hover { background: #f9fafb; }
+    .confirm-no:hover { background: var(--confirm-no-hover); }
 
-    #status {
-      margin-top: 10px; font-size: 12px; text-align: center;
-      color: #6b7280; min-height: 18px;
+    /* ── settings panel (inline, inside popup) ── */
+    #settingsPanel {
+      display: none;
     }
-    #status.success { color: #059669; font-weight: 600; }
-    #status.error   { color: #dc2626; }
+    .s-section {
+      font-size: 0.79em; font-weight: 700; color: var(--section-color);
+      text-transform: uppercase; letter-spacing: 0.05em;
+      margin-bottom: 10px; margin-top: 16px;
+    }
+    .s-section:first-child { margin-top: 0; }
+    .s-row {
+      display: flex; align-items: flex-start;
+      justify-content: space-between; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid var(--sep);
+    }
+    .s-row:last-of-type { border-bottom: none; }
+    .s-text { flex: 1; }
+    .s-label { font-size: 0.93em; color: var(--text-color); font-weight: 500; }
+    .s-desc  { font-size: 0.79em; color: var(--desc-color); margin-top: 2px; }
+
+    /* toggle */
+    .toggle { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; inset: 0;
+      background: var(--stepper-border); border-radius: 22px;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .slider::before {
+      content: ''; position: absolute;
+      width: 16px; height: 16px; left: 3px; top: 3px;
+      background: white; border-radius: 50%; transition: transform 0.2s;
+    }
+    .toggle input:checked + .slider { background: #2563eb; }
+    .toggle input:checked + .slider::before { transform: translateX(18px); }
+
+    /* theme buttons */
+    .theme-group { display: flex; gap: 5px; flex-shrink: 0; }
+    .theme-btn {
+      padding: 4px 9px; border-radius: 7px; cursor: pointer;
+      font-size: 0.86em; font-weight: 600;
+      border: 1.5px solid var(--stepper-border);
+      background: var(--stepper-bg); color: var(--stepper-color);
+      transition: all 0.15s; white-space: nowrap;
+    }
+    .theme-btn.active { background: #2563eb; color: #fff; border-color: #2563eb; }
+
+    /* size stepper */
+    .stepper { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
+    .step-btn {
+      width: 26px; height: 26px; border-radius: 7px;
+      border: 1.5px solid var(--stepper-border);
+      background: var(--stepper-bg); color: var(--stepper-color);
+      font-size: 1em; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .step-btn:hover:not(:disabled) { background: #2563eb; color: #fff; border-color: #2563eb; }
+    .step-btn:disabled { opacity: 0.35; cursor: default; }
+    .step-val {
+      font-size: 0.86em; font-weight: 700; color: var(--text-color);
+      min-width: 34px; text-align: center;
+    }
+
+    .s-saved {
+      font-size: 0.79em; color: #059669; font-weight: 600;
+      text-align: center; opacity: 0; transition: opacity 0.3s;
+      overflow: hidden; max-height: 0; transition: opacity 0.3s, max-height 0.3s;
+    }
+    .s-saved.show { opacity: 1; max-height: 24px; margin-top: 8px; }
+    .s-footer {
+      margin-top: 6px; padding-top: 8px;
+      border-top: 1px solid var(--sep);
+      display: flex; justify-content: flex-end;
+    }
+    .github-link {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.86em; color: var(--desc-color); text-decoration: none;
+      transition: color 0.2s;
+    }
+    .github-link:hover { color: var(--text-color); }
+    .github-link svg { width: 14px; height: 14px; fill: currentColor; }
   </style>
 </head>
 <body style="position:relative;">
@@ -115,7 +298,11 @@
   <div class="header">
     <img src="icon.png" alt="logo">
     <div>
-      <h1>Askep Cleaner <span style="font-size:11px;color:#888;font-weight:400;">v2.0</span></h1>
+      <h1>Askep Cleaner <span class="ext-version" style="font-size:0.69em;color:#888;font-weight:400;"></span></h1>
+    </div>
+    <div class="header-right">
+      <button class="back-btn" id="backBtn"><span class="arrow">←</span> Назад</button>
+      <button class="settings-btn" id="settingsBtn" title="Налаштування">⚙️</button>
     </div>
   </div>
 
@@ -130,50 +317,135 @@
     <div id="scanningMsg">⏳ Сканування...</div>
     <div id="results">
       <div class="result-title">Знайдені дані</div>
-      <div class="item">
+      <div class="item" data-key="cache">
         <div class="item-left"><span class="item-icon">🗂️</span>
           <div><div class="item-name">Cache</div><div class="item-desc">Кешовані ресурси сайту</div></div>
         </div><span class="badge badge-checking" id="badge-cache">...</span>
       </div>
-      <div class="item">
+      <div class="item" data-key="cookies">
         <div class="item-left"><span class="item-icon">🍪</span>
           <div><div class="item-name">Cookies</div><div class="item-desc">Сесійні та постійні</div></div>
         </div><span class="badge badge-checking" id="badge-cookies">...</span>
       </div>
-      <div class="item">
+      <div class="item" data-key="localStorage">
         <div class="item-left"><span class="item-icon">💾</span>
-          <div><div class="item-name">localStorage</div><div class="esti-desc">Постійне сховище</div></div>
+          <div><div class="item-name">localStorage</div><div class="item-desc">Постійне сховище</div></div>
         </div><span class="badge badge-checking" id="badge-localStorage">...</span>
       </div>
-      <div class="item">
+      <div class="item" data-key="sessionStorage">
         <div class="item-left"><span class="item-icon">⏱️</span>
           <div><div class="item-name">sessionStorage</div><div class="item-desc">Токени сесії</div></div>
         </div><span class="badge badge-checking" id="badge-sessionStorage">...</span>
       </div>
-      <div class="item">
+      <div class="item" data-key="indexedDB">
         <div class="item-left"><span class="item-icon">🗃️</span>
           <div><div class="item-name">IndexedDB</div><div class="item-desc">Офлайн-дані та форми</div></div>
         </div><span class="badge badge-checking" id="badge-indexedDB">...</span>
       </div>
-      <div class="item">
+      <div class="item" data-key="serviceWorker">
         <div class="item-left"><span class="item-icon">⚙️</span>
           <div><div class="item-name">Service Workers</div><div class="item-desc">Фонові скрипти</div></div>
         </div><span class="badge badge-checking" id="badge-serviceWorker">...</span>
       </div>
       <div class="actions" id="actions" style="display:none;">
-        <button class="clear-btn" id="clearBtn">🧹 Очистити знайдене</button>
+        <button class="clear-btn" id="clearBtn">🧹 Очистити все</button>
         <button class="rescan-btn" id="rescanBtn">↺</button>
       </div>
     </div>
     <div id="status"></div>
   </div>
 
-  <!-- підтвердження очищення -->
+  <!-- налаштування (вбудована панель) -->
+  <div id="settingsPanel">
+
+    <div class="s-section">Відображення</div>
+
+    <div class="s-row">
+      <div class="s-text">
+        <div class="s-label">Тема</div>
+        <div class="s-desc">Колірна схема інтерфейсу</div>
+      </div>
+      <div class="theme-group">
+        <button class="theme-btn" data-theme="auto">🌐 Авто</button>
+        <button class="theme-btn" data-theme="light">☀️</button>
+        <button class="theme-btn" data-theme="dark">🌙</button>
+      </div>
+    </div>
+
+    <div class="s-row">
+      <div class="s-text">
+        <div class="s-label">Розмір інтерфейсу</div>
+        <div class="s-desc">Масштаб тексту та вікна</div>
+      </div>
+      <div class="stepper">
+        <button class="step-btn" id="sizeDown">−</button>
+        <span class="step-val" id="sizeVal">100%</span>
+        <button class="step-btn" id="sizeUp">+</button>
+      </div>
+    </div>
+
+    <div class="s-row">
+      <div class="s-text">
+        <div class="s-label">Скривати «Чисто»</div>
+        <div class="s-desc">Не показувати чисті типи після сканування</div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="hideClean" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="s-section">Очищення</div>
+
+    <div class="s-row">
+      <div class="s-text">
+        <div class="s-label">Підтвердження</div>
+        <div class="s-desc">Показувати діалог перед очищенням</div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="confirmBeforeClear" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="s-row">
+      <div class="s-text">
+        <div class="s-label">Затримка після очищення</div>
+        <div class="s-desc">Показувати «Очищено» перед закриттям</div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="closeDelay" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="s-saved" id="sSaved">✅ Збережено</div>
+
+    <div class="s-footer">
+      <a class="github-link" href="https://github.com/dima101097/askep_cleaner" target="_blank">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577
+            0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756
+            -1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.84 1.237 1.84 1.237
+            1.07 1.834 2.807 1.304 3.492.997.108-.775.418-1.305.762-1.605-2.665-.3
+            -5.466-1.332-5.466-5.93 0-1.31.468-2.38 1.235-3.22-.124-.303-.535-1.523.117
+            -3.176 0 0 1.008-.322 3.3 1.23a11.5 11.5 0 0 1 3-.404c1.02.005 2.045.138
+            3 .404 2.29-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.873.12 3.176.77.84
+            1.233 1.91 1.233 3.22 0 4.61-2.807 5.625-5.48 5.92.43.372.823 1.102.823
+            2.222 0 1.606-.015 2.898-.015 3.293 0 .322.216.694.825.576C20.565 21.796
+            24 17.298 24 12c0-6.63-5.37-12-12-12z"/>
+        </svg>
+        GitHub
+      </a>
+    </div>
+  </div>
+
+  <!-- підтвердження -->
   <div id="confirmOverlay">
     <div class="confirm-box">
       <div class="icon">⚠️</div>
-      <h2>Підтвердіть очищення</h2>
-      <p>Буде очищено всі знайдені дані.<br>Сторінка перезавантажиться автоматично.</p>
+      <h2 id="confirmTitle">Підтвердіть очищення</h2>
+      <p id="confirmText">Буде очищено всі знайдені дані.<br>Сторінка перезавантажиться автоматично.</p>
       <div class="confirm-actions">
         <button class="confirm-yes" id="confirmYes">Очистити</button>
         <button class="confirm-no"  id="confirmNo">Скасувати</button>

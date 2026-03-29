@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Askep Cleaner",
-  "version": "2.0",
+  "version": "2.2",
   "description": "Cleans cache and cookies for askep.net",
   "permissions": [
     "browsingData",
@@ -22,7 +22,6 @@
     "48": "icon.png",
     "128": "icon.png"
   },
-  "options_page": "options.html",
   "host_permissions": [
     "*://*.askep.net/*"
   ]
